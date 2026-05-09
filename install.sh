@@ -34,13 +34,32 @@ source venv/bin/activate
 pip install --upgrade pip --quiet
 pip install -r requirements.txt
 
-# 4. Pre-download Whisper model so first run is instant
-echo "[4/5] Downloading Whisper tiny.en model (~75 MB)..."
+# 4. Pre-download models so first run is instant
+echo "[4/5] Downloading models..."
 python3 -c "
 from faster_whisper import WhisperModel
 WhisperModel('tiny.en', device='cpu', compute_type='int8')
-print('  Whisper model ready')
+print('  Whisper tiny.en ready')
 "
+python3 -c "
+import openwakeword
+openwakeword.utils.download_models(['hey_jarvis'])
+print('  hey_jarvis wake word model ready')
+"
+
+# Set ALSA default to Pirate Audio (card 1 = sndrpihifiberry)
+if [ ! -f /etc/asound.conf ]; then
+    echo "[4b/5] Setting Pirate Audio as default ALSA output..."
+    sudo bash -c 'printf "defaults.pcm.card 1\ndefaults.ctl.card 1\n" > /etc/asound.conf'
+fi
+
+# Enable DAC at boot (BCM 25 must be HIGH for the amp to work)
+CONFIG=/boot/firmware/config.txt
+[ -f "$CONFIG" ] || CONFIG=/boot/config.txt
+if ! grep -q "gpio=25=op,dh" "$CONFIG"; then
+    echo "gpio=25=op,dh" | sudo tee -a "$CONFIG"
+    echo "  DAC enable pin configured — reboot required"
+fi
 
 # 5. systemd service
 echo "[5/5] Installing systemd service..."

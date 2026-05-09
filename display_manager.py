@@ -85,7 +85,8 @@ class DisplayManager:
                      start=210, end=330, fill=(*COL_ACCENT, alpha), width=2)
 
         self._centered_text(draw, "Smart Speaker", 135, self._font_large, COL_WHITE)
-        self._centered_text(draw, "Hold  A  to speak", 172, self._font_small, COL_DIM)
+        self._centered_text(draw, "Say 'Hey Jarvis'", 168, self._font_small, COL_DIM)
+        self._centered_text(draw, "or hold button  A", 188, self._font_small, COL_DIM)
         self._push(img)
 
     def show_listening(self):

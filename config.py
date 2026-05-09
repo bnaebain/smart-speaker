@@ -30,6 +30,12 @@ WHISPER_MODEL = "tiny.en"  # ~75 MB; upgrade to "base.en" for better accuracy
 # --- TTS ---
 TTS_VOICE = "en-US-AriaNeural"
 
+# --- Wake word ---
+WAKE_WORD_MODEL  = "hey_jarvis"   # openwakeword model name
+WAKE_THRESHOLD   = 0.5
+SILENCE_TIMEOUT  = 2.0            # seconds of silence before VAD stops recording
+ENERGY_THRESHOLD = 0.015          # RMS threshold to detect speech
+
 # --- Display ---
 DISPLAY_WIDTH = 240
 DISPLAY_HEIGHT = 240
