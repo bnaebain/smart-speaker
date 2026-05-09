@@ -28,7 +28,7 @@ USB_MIC_KEYWORD = "USB"
 WHISPER_MODEL = "tiny.en"  # ~75 MB; upgrade to "base.en" for better accuracy
 
 # --- TTS ---
-TTS_VOICE = "en-US-AriaNeural"
+TTS_VOICE = "en-US-ChristopherNeural"
 
 # --- Wake word ---
 # Picovoice Porcupine (custom "Nova" wake word — recommended)
