@@ -3,9 +3,9 @@
 import sys
 
 try:
-    import ST7789
+    import st7789 as ST7789
 except ImportError:
-    sys.exit("ST7789 not installed — activate the venv first: source venv/bin/activate")
+    sys.exit("st7789 not installed — activate the venv first: source venv/bin/activate")
 
 from PIL import Image, ImageDraw
 

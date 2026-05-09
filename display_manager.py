@@ -16,7 +16,7 @@ from config import (
 )
 
 try:
-    import ST7789
+    import st7789 as ST7789
     from PIL import Image, ImageDraw, ImageFont
     _HW_AVAILABLE = True
 except ImportError:
