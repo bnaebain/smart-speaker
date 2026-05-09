@@ -77,7 +77,8 @@ Type=simple
 User=$USER
 WorkingDirectory=$SCRIPT_DIR
 Environment="ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-REPLACE_ME}"
-ExecStart=$SCRIPT_DIR/venv/bin/python $SCRIPT_DIR/main.py
+Environment="PYTHONUNBUFFERED=1"
+ExecStart=$SCRIPT_DIR/venv/bin/python -u $SCRIPT_DIR/main.py
 Restart=on-failure
 RestartSec=5
 
