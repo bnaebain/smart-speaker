@@ -98,13 +98,23 @@ class WakeWordDetector:
     # ------------------------------------------------------------------
 
     def _listen_whisper(self, on_detected, stop_event):
-        import sounddevice as sd
-        import soundfile as sf
-        from audio import find_input_device, _device_native_rate, _resample, WHISPER_RATE
-        import stt
+        print("[wake] _listen_whisper started")
+        try:
+            import sounddevice as sd
+            import soundfile as sf
+            from audio import find_input_device, _device_native_rate, _resample, WHISPER_RATE
+            import stt
+        except Exception as exc:
+            print(f"[wake] import error: {exc}")
+            return
 
-        device = find_input_device()
-        native_rate = _device_native_rate(device)
+        try:
+            device = find_input_device()
+            native_rate = _device_native_rate(device)
+            print(f"[wake] mic device={device} rate={native_rate}")
+        except Exception as exc:
+            print(f"[wake] device error: {exc}")
+            return
         chunk = 1024
         max_chunks   = int(2.0  * native_rate / chunk)
         silence_stop = int(0.5  * native_rate / chunk)
@@ -119,10 +129,17 @@ class WakeWordDetector:
             started = False
             log_counter = 0
 
-            with sd.RawInputStream(
-                samplerate=native_rate, channels=1, dtype="int16",
-                device=device, blocksize=chunk,
-            ) as stream:
+            try:
+                stream_ctx = sd.RawInputStream(
+                    samplerate=native_rate, channels=1, dtype="int16",
+                    device=device, blocksize=chunk,
+                )
+            except Exception as exc:
+                print(f"[wake] failed to open mic stream: {exc}")
+                return
+
+            with stream_ctx as stream:
+                print("[wake] mic stream open, listening...")
                 while not stop_event.is_set():
                     data, _ = stream.read(chunk)
                     arr = np.frombuffer(bytes(data), dtype=np.int16)
