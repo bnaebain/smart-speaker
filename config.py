@@ -31,8 +31,14 @@ WHISPER_MODEL = "tiny.en"  # ~75 MB; upgrade to "base.en" for better accuracy
 TTS_VOICE = "en-US-AriaNeural"
 
 # --- Wake word ---
-WAKE_WORD_MODEL  = "hey_jarvis"   # openwakeword model name
+# Picovoice Porcupine (custom "Nova" wake word — recommended)
+PORCUPINE_ACCESS_KEY = os.environ.get("PORCUPINE_ACCESS_KEY", "")
+PORCUPINE_MODEL_PATH = "nova_raspberry-pi.ppn"  # place in smart-speaker dir
+
+# openwakeword fallback (used when Porcupine is not configured)
+WAKE_WORD_MODEL  = "hey_jarvis"
 WAKE_THRESHOLD   = 0.5
+
 SILENCE_TIMEOUT  = 2.0            # seconds of silence before VAD stops recording
 ENERGY_THRESHOLD = 0.015          # RMS threshold to detect speech
 
