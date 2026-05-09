@@ -40,9 +40,9 @@ WAKE_WORD_MODEL  = "hey_jarvis"
 WAKE_THRESHOLD   = 0.5
 
 SILENCE_TIMEOUT   = 1.5           # seconds of silence before VAD stops recording
-SPEECH_THRESHOLD  = 0.03          # RMS above this = someone is speaking
-SILENCE_THRESHOLD = 0.01          # RMS below this = silence (lower than speech)
-ENERGY_THRESHOLD  = 0.005         # wake word mic sensitivity (kept low)
+SPEECH_THRESHOLD  = 0.004         # RMS above this = someone is speaking
+SILENCE_THRESHOLD = 0.0018        # RMS below this = silence
+ENERGY_THRESHOLD  = 0.005         # wake word mic sensitivity
 
 # --- Display ---
 DISPLAY_WIDTH = 240
