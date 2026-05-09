@@ -177,6 +177,10 @@ class WakeWordDetector:
                 on_detected()
                 return  # stream already closed
 
+            # Brief cooldown so we don't hammer Whisper on ambient speech
+            import time
+            time.sleep(0.5)
+
     def _listen_porcupine(self, on_detected, stop_event):
         import sounddevice as sd
         from audio import find_input_device, _device_native_rate, _resample
