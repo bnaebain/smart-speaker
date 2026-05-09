@@ -20,7 +20,7 @@ import numpy as np
 from config import (
     PORCUPINE_ACCESS_KEY, PORCUPINE_MODEL_PATH,
     WAKE_WORD_MODEL, WAKE_THRESHOLD,
-    ENERGY_THRESHOLD,
+    ENERGY_THRESHOLD,  # used as base for wake sensitivity
 )
 
 # The keyword Whisper listens for (case-insensitive)

@@ -15,7 +15,7 @@ import numpy as np
 import sounddevice as sd
 import soundfile as sf
 
-from config import CHANNELS, MAX_RECORD_SECONDS, USB_MIC_KEYWORD, SILENCE_TIMEOUT, ENERGY_THRESHOLD
+from config import CHANNELS, MAX_RECORD_SECONDS, USB_MIC_KEYWORD, SILENCE_TIMEOUT, SPEECH_THRESHOLD, SILENCE_THRESHOLD
 
 WHISPER_RATE = 16000
 
@@ -73,8 +73,11 @@ def record_until_stop(stop_event: threading.Event) -> np.ndarray | None:
     return _resample(raw, native_rate, WHISPER_RATE)
 
 
-def record_with_vad(cancel_event: threading.Event) -> np.ndarray | None:
-    """Wake-word mode: record until silence or cancel. Returns 16kHz float32 array."""
+def record_with_vad(cancel_event: threading.Event,
+                    stop_early: threading.Event | None = None) -> np.ndarray | None:
+    """Wake-word mode: record until silence, cancel, or stop_early (button A).
+    Uses two thresholds: SPEECH_THRESHOLD to detect talking, SILENCE_THRESHOLD
+    to detect when the room is quiet again."""
     device = find_input_device()
     native_rate = _device_native_rate(device)
     chunk = 1024
@@ -87,15 +90,17 @@ def record_with_vad(cancel_event: threading.Event) -> np.ndarray | None:
         with _open_stream(device, native_rate, chunk) as stream:
             for _ in range(int(MAX_RECORD_SECONDS * native_rate / chunk)):
                 if cancel_event.is_set():
+                    return None
+                if stop_early and stop_early.is_set():
                     break
                 data, _ = stream.read(chunk)
                 arr = np.frombuffer(bytes(data), dtype=np.int16)
                 frames.append(arr.copy())
                 rms = np.sqrt(np.mean((arr.astype(np.float32) / 32768.0) ** 2))
-                if rms > ENERGY_THRESHOLD:
+                if rms > SPEECH_THRESHOLD:
                     has_speech = True
                     silent_chunks = 0
-                elif has_speech:
+                elif has_speech and rms < SILENCE_THRESHOLD:
                     silent_chunks += 1
                     if silent_chunks >= max_silent:
                         break

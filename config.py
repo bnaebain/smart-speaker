@@ -39,8 +39,10 @@ PORCUPINE_MODEL_PATH = "nova_raspberry-pi.ppn"  # place in smart-speaker dir
 WAKE_WORD_MODEL  = "hey_jarvis"
 WAKE_THRESHOLD   = 0.5
 
-SILENCE_TIMEOUT  = 2.0            # seconds of silence before VAD stops recording
-ENERGY_THRESHOLD = 0.015          # RMS threshold to detect speech
+SILENCE_TIMEOUT   = 1.5           # seconds of silence before VAD stops recording
+SPEECH_THRESHOLD  = 0.03          # RMS above this = someone is speaking
+SILENCE_THRESHOLD = 0.01          # RMS below this = silence (lower than speech)
+ENERGY_THRESHOLD  = 0.005         # wake word mic sensitivity (kept low)
 
 # --- Display ---
 DISPLAY_WIDTH = 240

@@ -76,15 +76,16 @@ class SmartSpeaker:
 
     def _on_a_pressed(self):
         with self._lock:
-            if self.state != State.IDLE:
-                return
-            self.state = State.RECORDING
-            self._ptt_mode = True
-        # Stop wake listener so its mic stream closes before we open ours
-        self._wake_stop.set()
-        self._cancel.clear()
-        self._stop_rec.clear()
-        threading.Thread(target=self._pipeline, daemon=True).start()
+            if self.state == State.IDLE:
+                self.state = State.RECORDING
+                self._ptt_mode = True
+                self._wake_stop.set()
+                self._cancel.clear()
+                self._stop_rec.clear()
+                threading.Thread(target=self._pipeline, daemon=True).start()
+            elif self.state == State.RECORDING and not self._ptt_mode:
+                # Wake word mode — A pressed means "I'm done talking, submit now"
+                self._stop_rec.set()
 
     def _on_a_released(self):
         if self._ptt_mode:
@@ -144,7 +145,7 @@ class SmartSpeaker:
         if self._ptt_mode:
             raw = audio.record_until_stop(self._stop_rec)
         else:
-            raw = audio.record_with_vad(self._cancel)
+            raw = audio.record_with_vad(self._cancel, stop_early=self._stop_rec)
 
         if self._cancel.is_set() or raw is None or len(raw) < audio.WHISPER_RATE * 0.3:
             self._idle()
