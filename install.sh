@@ -12,6 +12,7 @@ sudo apt-get install -y \
     mpg123 \
     libportaudio2 portaudio19-dev \
     libopenblas-dev \
+    liblgpio-dev \
     fonts-dejavu-core
 
 # 2. Enable SPI (needed for ST7789 display)
