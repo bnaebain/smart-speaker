@@ -11,8 +11,7 @@ sudo apt-get install -y \
     python3-pip python3-venv \
     mpg123 \
     libportaudio2 portaudio19-dev \
-    libatlas-base-dev \
-    libblas-dev liblapack-dev \
+    libopenblas-dev \
     fonts-dejavu-core
 
 # 2. Enable SPI (needed for ST7789 display)
