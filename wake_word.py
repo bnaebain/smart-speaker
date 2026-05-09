@@ -106,14 +106,18 @@ class WakeWordDetector:
         device = find_input_device()
         native_rate = _device_native_rate(device)
         chunk = 1024
-        max_chunks    = int(2.0  * native_rate / chunk)
-        silence_stop  = int(0.5  * native_rate / chunk)
-        min_chunks    = int(0.25 * native_rate / chunk)
+        max_chunks   = int(2.0  * native_rate / chunk)
+        silence_stop = int(0.5  * native_rate / chunk)
+        min_chunks   = int(0.25 * native_rate / chunk)
+        # Low threshold — Whisper rejects false triggers, so we'd rather not miss speech
+        speech_threshold = max(0.005, ENERGY_THRESHOLD * 0.5)
+        log_every = int(3.0 * native_rate / chunk)  # print RMS every ~3s
 
         while not stop_event.is_set():
             frames = []
             silent = 0
             started = False
+            log_counter = 0
 
             with sd.RawInputStream(
                 samplerate=native_rate, channels=1, dtype="int16",
@@ -124,7 +128,12 @@ class WakeWordDetector:
                     arr = np.frombuffer(bytes(data), dtype=np.int16)
                     rms = np.sqrt(np.mean((arr.astype(np.float32) / 32768.0) ** 2))
 
-                    if rms > ENERGY_THRESHOLD * 2:   # slightly higher bar to avoid noise
+                    log_counter += 1
+                    if log_counter >= log_every:
+                        print(f"[wake] listening — RMS {rms:.4f} (threshold {speech_threshold:.4f})")
+                        log_counter = 0
+
+                    if rms > speech_threshold:
                         started = True
                         silent = 0
                         frames.append(arr.copy())
@@ -145,6 +154,7 @@ class WakeWordDetector:
             sf.write(wav_path, audio_16k, WHISPER_RATE, subtype="PCM_16")
             text = stt.transcribe(wav_path).lower()
             os.unlink(wav_path)
+            print(f"[wake] heard: '{text}' (looking for '{WHISPER_KEYWORD}')")
 
             if WHISPER_KEYWORD.lower() in text:
                 on_detected()
